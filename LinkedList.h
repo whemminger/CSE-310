@@ -1,8 +1,9 @@
-// Assignment: #1
-// Your Name: William Schuhmann
+// ASU CSE310 Assignment #5
+// Name of Author: William Schuhmann
 // ASU ID: 1215016803
-// ASU Email Address: wschuhma@asu.edu
-// Description: Header File for Assignment 1. 
+// Description: A simple linked list that implements a list of Food objects. A user can perform searching, insertion or deletion on the linked list.
+
+//LinkedList.h
 
 #include <iostream>
 #include <iomanip>
@@ -10,107 +11,151 @@
 
 using namespace std;
 
-//Food represents a food information
 struct Food
 {
-    string foodName;
-    int id;
+    string foodID, name, supplierID;
     double price;
     struct Food* next;
 };
 
-//class LinkedList will contains a linked list of foods
 class LinkedList
 {
     private:
         struct Food* head;
-
+        int size;
     public:
-        LinkedList();
-        ~LinkedList();
-        bool isFound(int foodId);
-        bool add(string foodName, int foodId, double foodPrice);
-        bool removeById(int foodId);
-        bool removeByName(string foodName);
-        bool changeFoodName(int foodId, string newFoodName);
-        bool changeFoodPrice(int foodId, double newPrice);
-        void printFoodList();
+           LinkedList();
+           ~LinkedList();
+           Food* getHead();
+           int getSize();
+           bool insertFood(string foodID, string name, string supplierID, double price);
+           bool deleteFood(string foodID);
+           bool searchFood(string foodID);
+           void displayList();
 };
 
-//Constructor to initialize an empty linked list
+//Constructor
 LinkedList::LinkedList()
 {
     head = NULL;
+    size = 0;
 }
 
 //Destructor
-//Before termination, the destructor is called to free the associated memory occupied by the existing linked list.
-//It deletes all the nodes including the head and finally prints the number of nodes deleted by it.
-//Return value: Prints the number of nodes deleted by it.
 LinkedList::~LinkedList()
 {
-    int foodCount = 0;
     //----
-    //----
-    cout << "The number of deleted food items is: " << foodCount <<"\n";
+    Food *temp = head;
+
+    while(temp!= NULL){
+      Food *next = temp->next;
+      delete temp;
+      temp = next;
+    }
+    head = NULL;
 }
 
-//A function to identify whether the parameterized food is inside the LinkedList or not.
-//Return true if it exists and false otherwise.
-bool LinkedList::isFound(int foodId)
+//Accessor for the head
+Food* LinkedList::getHead()
 {
-	//----
-	//----
+    return head;
 }
 
-//Creates a new node and inserts it into the list at the right place.
-//It maintains an alphabetical ordering of foods by their names. Each
-//food item has a unique id, if two food items have exactly the same name,
-//then insert it into the list in the increasing order of their IDs.
-//Return value: true if it is successfully inserted and false in case of failures.
-bool LinkedList::add(string foodName, int foodId, double foodPrice)
+//Return number of foods inside the Linked list
+int LinkedList::getSize()
 {
-     //----
-     //----
+    return size;
 }
 
-//Removes the given food by Id from the list, releases the memory and updates pointers.
-//Return true if it is successfully removed, false otherwise.
-bool LinkedList::removeById(int foodId)
-{
-	//----
-	//----
-}
-
-//Removes the given food by name from the list, releases the memory and updates pointers.
-//Return true if it is successfully removed, false otherwise. Note: all foods with
-//the parameterized name should be removed from the list.
-bool LinkedList::removeByName(string foodName)
-{
-	//----
-	//----
-}
-
-//Modifies the name of the given Food item. Return true if it modifies successfully and
-//false otherwise. Note: after changing a food name, the linked list must still be
-//in alphabetical order of foods name
-bool LinkedList::changeFoodName(int oldFoodId, string newFoodName)
-{
-	//----
-	//----
-}
-
-//Modifies the price of the given food item. Return true if it modifies successfully and
-//false otherwise.
-bool LinkedList::changeFoodPrice(int foodId, double newPrice)
+//Insert the parameter food at the head of the linked list.
+//return true if it is inserted successfully and false otherwise
+bool LinkedList::insertFood(string foodID, string name, string supplierID, double price)
 {
     //----
-    //----
-}
+    bool truthVal;
+    Food *temp = new Food;
 
-//Prints all the elements in the linked list starting from the head node.
-void LinkedList::printFoodList()
+    truthVal = searchFood(foodID);
+    if(truthVal == true){
+      return false;
+    }else{
+      temp->foodID = foodID;
+      temp->name = name;
+      temp->supplierID = supplierID;
+      temp->price = price;
+      temp->next = head;
+      head = temp;
+      size++;
+      return true;
+    }
+ }
+
+//Delete the food with the given foodID from the linked list.
+//Return true if it is deleted successfully and false otherwise
+bool LinkedList::deleteFood(string foodID)
 {
     //----
+    Food *Previous = NULL;
+    Food *temp = head;
+
+    if(temp == NULL){
+      return false;
+    }else{
+        
+      if(temp->foodID.compare(foodID) == 0){
+        head = head->next;
+        delete temp;
+        size = size - 1;
+        return true;
+      } else{
+        while(temp != NULL){
+            
+          if(temp->foodID.compare(foodID) == 0)
+          {
+            Previous->next = temp->next;
+            delete temp;
+            size = size - 1;
+            return true;
+          }
+          Previous = temp;
+          temp = temp->next;
+        }
+        return false;
+      }
+    }
+}
+
+//This function searches the food list with the given foodID
+//returns true if it is found, otherwise return false.
+bool LinkedList::searchFood(string foodID)
+{
     //----
+    Food *temp = head;
+
+    while(temp!=NULL){
+      if(temp->foodID.compare(foodID) == 0){
+        return true;
+      }
+      temp = temp->next;
+    }
+    return false;
+}
+
+//This function displays the content of the linked list.
+void LinkedList::displayList()
+{
+   struct Food *temp = head;
+    if(head == NULL)
+    {
+        return;
+    }
+    while(temp != NULL)
+    {
+      cout << left;
+      cout << setw(4) << temp->foodID
+           << setw(30) << temp->name
+           << setw(12) << temp->supplierID
+           << setw(8) << temp->price << endl;
+      temp = temp->next;
+    }
 }
